@@ -16,11 +16,13 @@
   "license": "ISC",
   "description": "Learning socketIO",
   "dependencies": {
+    "@types/cors": "^2.8.17",
+    "cors": "^2.8.5",
     "express": "^4.21.2",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
-    "@types/socket.io": "^3.0.1",
-    "@types/express": "^5.0.0"
+    "@types/express": "^5.0.0",
+    "@types/socket.io": "^3.0.1"
   }
 }
