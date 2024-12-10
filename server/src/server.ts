@@ -32,7 +32,11 @@ io.on("connection", (socket) => { // Enabling connection
 
     socket.on("message", ({room, message}) => {
         console.log({room, message})
-        io.to(room).emit("recieve-message", message) // used to send message to a room or an array of room
+        io.to(room).emit("recieve-message", message) // used to send message to a room or an array of room (can also use socket instead of io)
+    })
+
+    socket.on("join-room", (room) => {
+        socket.join(room)
     })
 
     // // disconnection

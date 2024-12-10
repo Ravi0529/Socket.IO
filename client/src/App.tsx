@@ -6,8 +6,10 @@ const App = () => {
   const socket = useMemo(() => io("http://localhost:8000"), [])
 
   const [inputValue, setInputValue] = useState<string>("")
+  const [allMessages, setAllMessages] = useState<string[]>([])
   const [room, setRoom] = useState<string>("")
   const [socketid, setSocketid] = useState<string>("")
+  const [roomName, setRoomName] = useState<string>("")
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -20,6 +22,7 @@ const App = () => {
 
     socket.on("recieve-message", (data) => { // sends the message (real time)
       console.log(data)
+      setAllMessages((allMessages) => [...allMessages, data])
     })
 
     // clean-up function
@@ -34,14 +37,43 @@ const App = () => {
     setInputValue("")
   }
 
+  const joinRoomHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    socket.emit("join-room", roomName)
+    setRoomName("")
+  }
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="justify-center items-center min-h-screen bg-gray-100">
+      <form className="room bg-white p-6 rounded shadow-md w-96" onSubmit={joinRoomHandler}>
+          <label
+            htmlFor="inputValue"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Create a Room:
+          </label>
+          <input
+            type="text"
+            id="room name"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
+            placeholder="Enter Room name"
+            className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <button
+            type="submit"
+            className="w-full bg-blue-500 mt-5 mb-3 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Join
+          </button>
+        </form>
+
       <form
         method="post"
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded shadow-md w-96"
       >
-        <h2 className="text-2xl font-bold mb-4 text-center">Submit Form</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Socket.IO</h2>
         <div className="mb-4">
           <label
             htmlFor="inputValue"
@@ -70,12 +102,25 @@ const App = () => {
           type="submit"
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          Submit
+          Send
         </button>
         <h3 className="id">
           {socketid}
         </h3>
       </form>
+
+      <div className="container bg-white p-4 mt-6 rounded shadow-md w-96 max-h-96 overflow-y-auto">
+        {
+          allMessages.map((text: string, index) => (
+            <div
+              className="box border-b py-2 text-gray-800"
+              key={index}
+            >
+              {text}
+            </div>
+          ))
+        }
+      </div>
     </div>
   )
 }
