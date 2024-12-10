@@ -5,10 +5,13 @@ const App = () => {
 
   const socket = useMemo(() => io("http://localhost:8000"), [])
 
-  const [inputValue, setInputValue] = useState("")
+  const [inputValue, setInputValue] = useState<string>("")
+  const [room, setRoom] = useState<string>("")
+  const [socketid, setSocketid] = useState<string>("")
 
   useEffect(() => {
     socket.on("connect", () => {
+      setSocketid(socket.id ?? "") // fallback in ts
       console.log("Connected", socket.id)
     })
 
@@ -27,7 +30,8 @@ const App = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    socket.emit("message", inputValue) // use to watch the o/p (itself in terminal)
+    socket.emit("message", { message: inputValue, room }) // use to watch the o/p (itself in terminal)
+    setInputValue("")
   }
 
   return (
@@ -53,6 +57,14 @@ const App = () => {
             placeholder="Type something..."
             className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
+          <input
+            type="text"
+            id="room"
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+            placeholder="Room chat..."
+            className="w-full px-4 py-2 mt-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
         <button
           type="submit"
@@ -60,6 +72,9 @@ const App = () => {
         >
           Submit
         </button>
+        <h3 className="id">
+          {socketid}
+        </h3>
       </form>
     </div>
   )

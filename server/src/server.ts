@@ -24,10 +24,15 @@ io.on("connection", (socket) => { // Enabling connection
     socket.emit("msg", `Stay connected at ${socket.id}`) // emit sends the message on the particular "id" itself
     // socket.broadcast.emit("msg", `Message sent by ${socket.id}`) // broadcast emit sends the message to all the users except "itself"
 
-    socket.on("message", (data) => {
-        console.log(data)
-        // io.emit("recieve-message", data) // use to send the message to all the users including ours, setting up on client side (io - sends to the entire socket)
-        socket.broadcast.emit("recieve-message", data) // sends the message to all the ids present excluding ours
+    // socket.on("message", (data) => {
+    //     console.log(data)
+    //     // io.emit("recieve-message", data) // use to send the message to all the users including ours, setting up on client side (io - sends to the entire socket)
+    //     socket.broadcast.emit("recieve-message", data) // sends the message to all the ids present excluding ours
+    // })
+
+    socket.on("message", ({room, message}) => {
+        console.log({room, message})
+        io.to(room).emit("recieve-message", message) // used to send message to a room or an array of room
     })
 
     // // disconnection
