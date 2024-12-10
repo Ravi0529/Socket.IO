@@ -18,12 +18,17 @@ const io = new Server(httpServer, {  // Initiate connection
 app.use(cors())
 
 io.on("connection", (socket) => { // Enabling connection
-    console.log("User connected!")
-    console.log("Id", socket.id)
+    console.log("User connected!", socket.id)
 
     // basic connection
     socket.emit("msg", `Stay connected at ${socket.id}`) // emit sends the message on the particular "id" itself
-    socket.broadcast.emit("msg", `Message sent by ${socket.id}`) // broadcast emit sends the message to all the users except "itself"
+    // socket.broadcast.emit("msg", `Message sent by ${socket.id}`) // broadcast emit sends the message to all the users except "itself"
+
+    socket.on("message", (data) => {
+        console.log(data)
+        // io.emit("recieve-message", data) // use to send the message to all the users including ours, setting up on client side (io - sends to the entire socket)
+        socket.broadcast.emit("recieve-message", data) // sends the message to all the ids present excluding ours
+    })
 
     // // disconnection
     socket.on("disconnect", () => {
