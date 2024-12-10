@@ -17,6 +17,11 @@ const io = new Server(httpServer, {  // Initiate connection
 
 app.use(cors())
 
+// middleware in Socket
+io.use((socket, next) => { // Socket.IO also provides middleware where we can implement auth before letting user sends the message
+    next()
+})
+
 io.on("connection", (socket) => { // Enabling connection
     console.log("User connected!", socket.id)
 
@@ -30,8 +35,8 @@ io.on("connection", (socket) => { // Enabling connection
     //     socket.broadcast.emit("recieve-message", data) // sends the message to all the ids present excluding ours
     // })
 
-    socket.on("message", ({room, message}) => {
-        console.log({room, message})
+    socket.on("message", ({ room, message }) => {
+        console.log({ room, message })
         io.to(room).emit("recieve-message", message) // used to send message to a room or an array of room (can also use socket instead of io)
     })
 
